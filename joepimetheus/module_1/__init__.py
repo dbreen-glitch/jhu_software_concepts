@@ -1,19 +1,13 @@
-from flask import Flask, render_template
+from flask import Flask
 
-app = Flask(__name__)
+import pages
 
-@app.route('/')
-def base():
-    return render_template('base.html') # render_template will look for the file in the templates folder
+def create_app():
+    app = Flask(__name__)
 
-@app.route('/works')
-def projects():
-    return render_template('works.html')
-
-@app.route('/contact')
-def contact():
-    return render_template('contact.html')
-
+    app.register_blueprint(pages.bp)
+    return app
 
 if __name__=='__main__':
+    app = create_app()
     app.run(host='0.0.0.0', port=8080)
