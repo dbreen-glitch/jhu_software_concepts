@@ -1,13 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Who is Dylan</title>
-</head>
-<body>
-    <h1>Dylan Joseph Breen</h1>
-    <h2>Principal Technical Solutions Consultant - PLM</h2>
+{% extends 'base.html' %}
+
+<h1>{% block title %}Who is Dylan{% endblock title %}</h1>
+
+{% block header %}<h2>Dylan Joseph Breen</h2>{% endblock header %}
+
+{% block content %}
+<h2>Principal Technical Solutions Consultant - PLM</h2>
     <h3>Topgolf Callaway Brands, Inc.</h3>
-    <img src="{{url_for('static', filename='python.jpg')}}">
+    <img src="{{url_for('static', filename='IMG_4661j.jpg')}}">
     <p>Dylan Breen has worked in Product Development, Hardware/Software Configuration, and 
         Database Systems for over 12 years. He received his B.A. in Cognitive Science with
          a concentration on Consciousness Studies from University of California, Berkeley in 2014.
@@ -17,5 +17,5 @@
          put together on the screen. You may find him out hiking the forests and jungles available
          to him that brings him to higher peaks where he enjoys the vistas of a well earned peace at the
          mountaintop.</p>
-</body>
-</html>
+
+{% endblock content %}
