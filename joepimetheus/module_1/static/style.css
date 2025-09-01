@@ -1,0 +1,124 @@
+/* ========== Base page defaults ========== */
+:root{
+  --nav-bg: #1e293b;      /* slate-800 */
+  --nav-fg: #e2e8f0;      /* slate-200 */
+  --nav-active-bg: #f59e0b; /* amber-500 */
+  --nav-active-fg: #111827; /* slate-900 */
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.6;
+  color: #222;
+  padding-top: 64px;        /* ensures content never hides behind fixed nav */
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ========== 1) Home page layout ========== */
+/* Wrap your home content in <section class="home-hero"> ... */
+.home-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+/* The text column (optional wrapper: <div class="home-text">) */
+.home-text {
+  flex: 1 1 60ch; /* grows, but prefers readable width */
+}
+
+/* The photo on the right: give the <img> class="home-photo" */
+.home-photo {
+  flex: 0 0 auto;
+  max-width: 280px;       /* keeps it “inline” with text height */
+  width: clamp(160px, 24vw, 280px);
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+/* Small screens: stack vertically with image under the text */
+@media (max-width: 768px) {
+  .home-hero {
+    flex-direction: column;
+  }
+  .home-photo {
+    align-self: flex-start;
+    margin-top: 8px;
+    width: clamp(160px, 50vw, 300px);
+  }
+}
+
+/* Optional fallback if you don't want to wrap with .home-hero:
+   just put class="home-photo-float" on the image. */
+.home-photo-float {
+  float: right;
+  max-width: 280px;
+  height: auto;
+  margin-left: 16px;
+  border-radius: 10px;
+}
+
+/* ========== 2) Top-right navigation bar ========== */
+/* Add class="top-nav" to your <nav> in base.html */
+.top-nav {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  background: var(--nav-bg);
+  color: var(--nav-fg);
+  padding: 8px;
+  border-radius: 12px 0 12px 12px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.18);
+}
+
+.top-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.top-nav a {
+  display: inline-block;
+  color: var(--nav-fg);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background .15s ease, color .15s ease, transform .05s ease;
+}
+
+.top-nav a:hover {
+  background: rgba(255,255,255,.12);
+}
+
+.top-nav a:active {
+  transform: translateY(1px);
+}
+
+/* Highlight current tab:
+   - works if you add class="active" to the current link, OR
+   - set aria-current="page" on it in your template */
+.top-nav a.active,
+.top-nav a[aria-current="page"] {
+  background: var(--nav-active-bg);
+  color: var(--nav-active-fg);
+}
+
+/* Make sure page content isn’t glued to the top-left edge */
+h1, h2, h3, p {
+  margin: 0 0 12px 0;
+}

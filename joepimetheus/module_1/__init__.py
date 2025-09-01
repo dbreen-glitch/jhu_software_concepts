@@ -1,13 +1,9 @@
 from flask import Flask
 
-import pages
+from module_1.pages import bp as pages_bp
 
 def create_app():
     app = Flask(__name__)
 
-    app.register_blueprint(pages.bp)
+    app.register_blueprint(pages_bp)
     return app
-
-if __name__=='__main__':
-    app = create_app()
-    app.run(host='0.0.0.0', port=8080)

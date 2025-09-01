@@ -5,17 +5,20 @@
 {% block header %}<h2>Dylan Joseph Breen</h2>{% endblock header %}
 
 {% block content %}
-<h2>Principal Technical Solutions Consultant - PLM</h2>
-    <h3>Topgolf Callaway Brands, Inc.</h3>
-    <img src="{{url_for('static', filename='IMG_4661j.jpg')}}">
-    <p>Dylan Breen has worked in Product Development, Hardware/Software Configuration, and 
-        Database Systems for over 12 years. He received his B.A. in Cognitive Science with
+<section class="home-hero">
+    <div class="hero-text">
+        <h2>Principal Technical Solutions Consultant - PLM</h2>
+        <h3>Topgolf Callaway Brands, Inc.</h3>
+        <p>Dylan Breen has worked in Product Development, Hardware/Software Configuration, and 
+         Database Systems for over 12 years. He received his B.A. in Cognitive Science with
          a concentration on Consciousness Studies from University of California, Berkeley in 2014.
-        An avid computer hobbiest and always loving a good tale, he enjoys the journey of
+         An avid computer hobbiest and always loving a good tale, he enjoys the journey of
          a good video game as well as the writing of a good story. You may find him at home,
          reading or writing if not seeing what next adventure minds more thoughtful than his have
          put together on the screen. You may find him out hiking the forests and jungles available
          to him that brings him to higher peaks where he enjoys the vistas of a well earned peace at the
          mountaintop.</p>
-
+    </div>
+        <img class="home-photo" src="{{url_for('static', filename='IMG_4661j.jpg')}}" alt="Dylan Breen">
+</section>
 {% endblock content %}
