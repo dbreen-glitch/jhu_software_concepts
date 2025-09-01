@@ -8,7 +8,7 @@ Module Info: Module 1 Assignment: Personal Website Due on 08/31/2025 at 11:59PM 
 How to launch my webpage:
 
 1. Copy joepimetheus folder to local server.
-2. Consult requirements.txt to ensure the local environment is aligned with requirements.
+2. Consult requirements.txt to ensure the local environment is aligned with requirements. (in yourappenv folder)
 3. Ensure your python is up to date.
 4. ensure Flask is installed
 5. run the following code in your terminal in the copied joepimetheus folder
