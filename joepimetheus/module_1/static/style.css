@@ -199,3 +199,5 @@ h1, h2, h3, p {
   background: var(--nav-active-bg);
   color: var(--nav-active-fg);
 }
+
+.site-header { margin-bottom: 64px; }

@@ -7,9 +7,9 @@ bp = Blueprint('pages', __name__)
 def home():
     return render_template('pages/home.html') # render_template will look for the file in the templates folder
 
-@bp.route('/works')
-def works():
-    return render_template('pages/works.html')
+@bp.route('/werx')
+def werx():
+    return render_template('pages/werx.html')
 
 @bp.route('/contact')
 def contact():
