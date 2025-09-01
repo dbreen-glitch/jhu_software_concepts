@@ -1,4 +1,7 @@
-/* ========== Base page defaults ========== */
+
+/* This draft had interesting suggestions that I wish to explore in later versions, will be fun to play with.
+    Currently is a mess as I kept trying to add to features I wanted, will need to tweak it to determine the exact
+    behavior and adjust parameters for more advanced flair/style. */
 :root{
   --nav-bg: #1e293b;      /* slate-800 */
   --nav-fg: #e2e8f0;      /* slate-200 */

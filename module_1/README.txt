@@ -22,8 +22,8 @@ Approach:
 Built with resources available, commit often to track changes along the process. Once I got most of the way, used LLM resources to help with style.css, kept flair where appropriate. Additionally, since this is just a piece of a larger project, I included additional comments to help remind me what the different areas of the code actually do so I can retain as a move forward. If some of it seems obvious, it has yet to be for me. This will help.
 
 
-Known Bugs: 
-Formatting and spacing issues remain, continuing to improve down to the wire!
+Known Bugs and Issues: 
+Style.css is a mess, will need to clean up in later version, from a webpage perspective though it works as desired. Created placeholders for pyhton files and directory structure for future state/expansion/versions. That is why they are empty.
 
 
 Citations:
