@@ -15,7 +15,6 @@ body {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   line-height: 1.6;
   color: #222;
-  padding-top: 64px;        /* ensures content never hides behind fixed nav */
 }
 
 main {
@@ -71,17 +70,7 @@ main {
 
 /* ========== 2) Top-right navigation bar ========== */
 /* Add class="top-nav" to your <nav> in base.html */
-.top-nav {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 1000;
-  background: var(--nav-bg);
-  color: var(--nav-fg);
-  padding: 8px;
-  border-radius: 12px 0 12px 12px;
-  box-shadow: 0 6px 16px rgba(0,0,0,.18);
-}
+
 
 .top-nav ul {
   list-style: none;
@@ -121,4 +110,92 @@ main {
 /* Make sure page content isn’t glued to the top-left edge */
 h1, h2, h3, p {
   margin: 0 0 12px 0;
+}
+
+/* Header bar with title (left) and nav (right) */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1200px;
+  margin: 16px auto 24px;
+  padding: 0 24px;
+}
+
+/* Keep the title tight */
+.site-header h1 {
+  margin: 0;
+}
+
+/* Nav sits inline on the right now */
+.top-nav {
+  position: static;        /* was fixed */
+  right: auto; top: auto;  /* neutralize old positioning */
+  margin: 0;
+}
+
+/* Full-width colored header bar */
+.site-header{
+  width: 100%;
+  background: var(--nav-bg);
+  color: var(--nav-fg);
+  box-shadow: 0 6px 16px rgba(0,0,0,.12);
+  /* Want the bar to stick on scroll? uncomment: */
+  /* position: sticky; top: 0; z-index: 1000; */
+}
+
+/* Center content; title left, nav right */
+.site-header__inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.site-header h1{
+  margin: 0;
+  color: var(--nav-fg);
+}
+
+/* Nav now lives inside the header; transparent background */
+.top-nav{
+  position: static;
+  background: transparent;
+  color: var(--nav-fg);
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+.top-nav ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.top-nav a{
+  display: inline-block;
+  color: var(--nav-fg);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background .15s ease, color .15s ease;
+}
+
+.top-nav a:hover{
+  background: rgba(255,255,255,.12);
+}
+
+/* Highlight current tab */
+.top-nav a.active,
+.top-nav a[aria-current="page"]{
+  background: var(--nav-active-bg);
+  color: var(--nav-active-fg);
 }

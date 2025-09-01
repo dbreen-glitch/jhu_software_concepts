@@ -1,3 +1,4 @@
+'''Define the routes and views for the web pages.'''
 from flask import Blueprint, render_template
 
 bp = Blueprint('pages', __name__)
