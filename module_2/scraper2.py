@@ -111,7 +111,7 @@ def get_detail_fields(url: str, rid) -> dict:
     dls = []
     dls = soup.select("dl") #selects the list of details section
 
-    result = {}
+    result = {"result_id": rid}
     for dl in dls:
         # many pages structure rows as <div><dt>…</dt><dd>…</dd></div>
         for row in dl.find_all("div", recursive=True): # Keeps searches to direct children of dl
@@ -154,6 +154,15 @@ if __name__ == "__main__":
         details = get_detail_fields(result_base, item["result_id"])
         data.extend(details)
     print(data)
+
+    survey_keys = {d["result_id"]: d for d in links}
+    details_keys = {d["result_id"]: d for d in data}
+    combined = []
+    for rid, sdata in survey_keys.items():
+        ddata = details_keys.get(rid, {})
+        combined.append({**sdata, **ddata})
+
+    print(combined)
 '''
     data = get_detail_fields(result_base, start, finish)
     print(data)
