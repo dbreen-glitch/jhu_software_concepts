@@ -32,19 +32,18 @@ def get_detail_fields(url: str) -> dict:
                 val = dd.get_text(" ", strip=True)
                 if key and val:
                     result[key] = val
-        # also catch flat dt/dd siblings if present
-        for dt in dl.find_all("dt", recursive=False):
-            dd = dt.find_next_sibling("dd")
-            if dt and dd:
-                key = dt.get_text(strip=True)
-                val = dd.get_text(" ", strip=True)
-                if key and val:
-                    result[key] = val
+
+    for li in soup.select("ul.tw-list-none > li"):
+        spans = li.find_all("span")
+        key = spans[0].get_text(strip=True).rstrip(":")
+        val = spans[1].get_text(strip=True)
+        result[key] = val
 
     return result
 
 if __name__ == "__main__":
     data = get_detail_fields(URL)
+    print(data)
     if not data:
         print("[debug] No dt/dd pairs found. Save the HTML and I’ll adjust selectors.")
     for k, v in data.items():
