@@ -5,7 +5,10 @@ from urllib.parse import urljoin
 
 http = urllib3.PoolManager()
 HEADERS = {"User-Agent": "Mozilla/5.0"}
+
 RESULT_RE = re.compile(r"/result/(\d+)$")   # captures the numeric id at end
+TERM_RE = re.compile(r"\b(Fall|Spring|Summer|Winter)\s+\d{4}\b")
+DATE_RE = re.compile(r"[A-Z][a-z]+ \d{1,2}, \d{4}")
 
 def collect_result_links(survey_base: str, start_page: int = 1, end_page: int| None = None,
                          limit: int| None = None, page_param: str = "page", delay=(0.8, 1.5)):
