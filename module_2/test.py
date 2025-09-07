@@ -49,8 +49,8 @@ def get_detail_fields(url: str, start, finish) -> dict:
     return data_output
 
 if __name__ == "__main__":
-    start = 986420
-    finish = 986999
+    start = 986400
+    finish = 986420
     data = get_detail_fields(URL, start, finish)
     print(data)
     if not data:

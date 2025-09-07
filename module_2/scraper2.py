@@ -1,3 +1,5 @@
+# This scrapes multiple pages from thegradcafe.com survey listings WORKING COPY
+
 import re, time, random
 import urllib3
 from bs4 import BeautifulSoup
@@ -76,6 +78,9 @@ def collect_survey_entries(
                 "date_added": added_on,
                 "term": term,
             })
+
+
+
             new_found += 1
 
             if limit is not None and len(out) >= limit:
@@ -90,9 +95,70 @@ def collect_survey_entries(
     return out
 
 
+#################################### detail scraping ####################################
+
+
+def get_detail_fields(url: str, rid) -> dict:
+    data_output = []
+
+    r = http.request("GET", f'{url}{rid}', headers=HEADERS, timeout=30.0, preload_content=True)
+    if r.status != 200:
+        raise Exception(f"Request failed with status {r.status}")
+
+    soup = BeautifulSoup(r.data, "html.parser")
+
+
+    dls = []
+    dls = soup.select("dl") #selects the list of details section
+
+    result = {}
+    for dl in dls:
+        # many pages structure rows as <div><dt>…</dt><dd>…</dd></div>
+        for row in dl.find_all("div", recursive=True): # Keeps searches to direct children of dl
+            dt = row.find("dt")
+            dd = row.find("dd")
+            if dt and dd:
+                key = dt.get_text(strip=True)
+                val = dd.get_text(" ", strip=True)
+                if key and val:
+                    result[key] = val
+
+    for li in soup.select("ul.tw-list-none > li"):
+        spans = li.find_all("span")
+        key = spans[0].get_text(strip=True).rstrip(":")
+        val = spans[1].get_text(strip=True)
+        result[key] = val
+
+    if result:
+        data_output.append(result)
+
+    # time.sleep(random.uniform(*delay))
+    
+    return data_output
+
+############################################### Main script ###############################################
+
 
 if __name__ == "__main__":
-    survey_base = "https://www.thegradcafe.com/survey/"
+    BASE = "https://www.thegradcafe.com/"
+    survey_base = f"{BASE}survey/"
+    result_base = f"{BASE}result/"
+    start = 986400
+    finish = 986420
     links = collect_survey_entries(survey_base, start_page=1, limit=20)
     print(len(links), "rows")
     print(links)
+
+    data = []
+    for item in links:
+        details = get_detail_fields(result_base, item["result_id"])
+        data.extend(details)
+    print(data)
+'''
+    data = get_detail_fields(result_base, start, finish)
+    print(data)
+    if not data:
+        print("[debug] No dt/dd pairs found. Save the HTML and I’ll adjust selectors.")
+    for record in data:
+        for k, v in record.items():
+            print(f"{k}: {v}")'''
