@@ -136,6 +136,7 @@ def get_detail_fields(url: str, rid) -> dict:
     
     return data_output
 
+
 ############################################### Main script ###############################################
 
 
@@ -143,17 +144,14 @@ if __name__ == "__main__":
     BASE = "https://www.thegradcafe.com/"
     survey_base = f"{BASE}survey/"
     result_base = f"{BASE}result/"
-    start = 986400
-    finish = 986420
     links = collect_survey_entries(survey_base, start_page=1, limit=20)
-    print(len(links), "rows")
-    print(links)
+
 
     data = []
     for item in links:
         details = get_detail_fields(result_base, item["result_id"])
         data.extend(details)
-    print(data)
+
 
     survey_keys = {d["result_id"]: d for d in links}
     details_keys = {d["result_id"]: d for d in data}
@@ -163,6 +161,7 @@ if __name__ == "__main__":
         combined.append({**sdata, **ddata})
 
     print(combined)
+    print(len(combined), "records")
 '''
     data = get_detail_fields(result_base, start, finish)
     print(data)
@@ -170,4 +169,5 @@ if __name__ == "__main__":
         print("[debug] No dt/dd pairs found. Save the HTML and I’ll adjust selectors.")
     for record in data:
         for k, v in record.items():
-            print(f"{k}: {v}")'''
+            print(f"{k}: {v}")
+'''
