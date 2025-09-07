@@ -4,11 +4,7 @@ from bs4 import BeautifulSoup
 URL = "https://www.thegradcafe.com/result/986420"  # use a real 'See More' URL you clicked
 http = urllib3.PoolManager()
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-}
+HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 def get_detail_fields(url: str) -> dict:
     r = http.request("GET", url, headers=HEADERS, timeout=30.0, preload_content=True)

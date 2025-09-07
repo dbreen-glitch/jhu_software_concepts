@@ -1,51 +1,60 @@
 # This tests the code for scraping one page from thegradcafe.com
 
-import re
-
-from bs4 import BeautifulSoup
+import time, random
 import urllib3
+from bs4 import BeautifulSoup
 
-URL = "https://www.thegradcafe.com/result/986380"
+URL = "https://www.thegradcafe.com/result/"  # use a real 'See More' URL you clicked
 http = urllib3.PoolManager()
 
+HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
-#resp = http.request("GET", url)
-#html = resp.data.decode("utf-8")
+def get_detail_fields(url: str, start, finish) -> dict:
+    data_output = []
+    for page in range(start, finish + 1):
+        r = http.request("GET", f'{url}{page}', headers=HEADERS, timeout=30.0, preload_content=True)
+        if r.status != 200:
+            raise Exception(f"Request failed with status {r.status}")
 
-#soup = BeautifulSoup(html, "html.parser")
+        soup = BeautifulSoup(r.data, "html.parser")
 
-#text = soup.get_text()
-#spaceless_text = text.replace("\n", "")
-#print(text)
 
-def get_detail_fields(url: str) -> dict:
-    r = http.request("GET", url,headers={"User-Agent": "Mozilla/5.0"})
-    if r.status != 200:
-        raise Exception(f"Request failed with status {r.status}")
+        dls = []
+        dls = soup.select("dl") #selects the list of details section
 
-    soup = BeautifulSoup(r.data, "html.parser")
+        result = {}
+        for dl in dls:
+            # many pages structure rows as <div><dt>…</dt><dd>…</dd></div>
+            for row in dl.find_all("div", recursive=True): # Keeps searches to direct children of dl
+                dt = row.find("dt")
+                dd = row.find("dd")
+                if dt and dd:
+                    key = dt.get_text(strip=True)
+                    val = dd.get_text(" ", strip=True)
+                    if key and val:
+                        result[key] = val
 
-    section = soup.select_one("div.tw-mt-6")
-    if not section:
-        return {}
+        for li in soup.select("ul.tw-list-none > li"):
+            spans = li.find_all("span")
+            key = spans[0].get_text(strip=True).rstrip(":")
+            val = spans[1].get_text(strip=True)
+            result[key] = val
 
-    dl = section.find("dl")
-    if not dl:
-        return {}
+        if result:
+            data_output.append(result)
 
-    result = {}
-    for row in dl.find_all("div", recursive=False):
-        dt = row.find("dt")
-        dd = row.find("dd")
-        if not dt or not dd:
-            continue
-        key = dt.get_text(strip=True)       # label, e.g., "Institution"
-        val = dd.get_text(" ", strip=True)  # value, e.g., "Wayne State University"
-        result[key] = val
+       # time.sleep(random.uniform(*delay))
+    
+    return data_output
 
-    return result
-
-data = get_detail_fields(URL)
-for k, v in data.items():
-    print(f"{k}: {v}")
+if __name__ == "__main__":
+    start = 986420
+    finish = 986999
+    data = get_detail_fields(URL, start, finish)
+    print(data)
+    if not data:
+        print("[debug] No dt/dd pairs found. Save the HTML and I’ll adjust selectors.")
+    for record in data:
+        for k, v in record.items():
+            print(f"{k}: {v}")
