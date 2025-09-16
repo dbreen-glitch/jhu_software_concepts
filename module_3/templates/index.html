@@ -5,11 +5,31 @@
   <meta charset="utf-8">
   <title>Grad School Cafe Data Analysis</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
 </head>
 <body>
   <header>
     <div class="brand">Grad School Cafe Data Analysis</div>
+    <div class="controls">
+      <form action="{{ url_for('pull_data') }}" method="get">
+        <button type="submit">Pull Data</button>
+      </form>
+      <form action="{{ url_for('update_analysis') }}" method="get">
+        <button type="submit">Update Analysis</button>
+      </form>
+    </div>
   </header>
+
+  <!-- Messages go here -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
 
   <main>
     <h1>Analysis</h1>
@@ -50,9 +70,20 @@
     </section>
 
     <section class="card">
-      <h2>How many entries from 2025 are acceptances from applicants who applied to Georgetown University for a PhD in Computer Science?</h2>
+      <h2>How many entries from Fall 2025 are acceptances from applicants who applied to Georgetown University for a PhD in Computer Science?</h2>
       <p><em>Answer: {{ gtown_phd_cs_2025_accept }}</em></p>
     </section>
+
+    <section class="card">
+      <h2>How many entries from Fall 2025 are acceptances from applicants who applied to UC Berkeley?</h2>
+      <p><em>Answer: {{ berkeley }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>How many entries from Fall 2025 were Rejected?</h2>
+      <p><em>Answer: {{ rejected }}</em></p>
+    </section>
+
   </main>
 </body>
 </html>

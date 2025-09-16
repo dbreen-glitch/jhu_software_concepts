@@ -1,9 +1,12 @@
 
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for, flash
+import threading
 import os
 import psycopg2
 
 app = Flask(__name__)
+
+app.secret_key = "dev"   # any non-empty string is fine for class use
 
 def one(cur, sql):
     cur.execute(sql)
@@ -72,6 +75,19 @@ def index():
                   AND llm_generated_program = 'computer science'
                   AND degree = 'PhD'
             """)
+            
+            berkeley = one(cur, """
+                SELECT COUNT(*) FROM applicants
+                WHERE term = 'Fall 2025'
+                    AND status = 'Accepted'
+                    AND llm_generated_university = 'University of California, Berkeley'
+            """)
+
+            rejected = one(cur, """
+                SELECT COUNT(*) FROM applicants
+                WHERE term = 'Fall 2025'
+                    AND status = 'Rejected'
+            """)
 
     return render_template("index.html",
         q1=q1,
@@ -81,8 +97,40 @@ def index():
         pct_fall_accept=pct_fall_accept,
         avg_gpa_fall_accepted=avg_gpa_fall_accepted,
         jhu_ms_cs=jhu_ms_cs,
-        gtown_phd_cs_2025_accept=gtown_phd_cs_2025_accept
+        gtown_phd_cs_2025_accept=gtown_phd_cs_2025_accept,
+        berkeley=berkeley,
+        rejected=rejected
     )
+
+is_scraping = False
+
+@app.route("/pull-data")
+def pull_data():
+    global is_scraping
+    if is_scraping:
+        flash("A pull is already running, please wait.")
+        return redirect(url_for("index"))
+
+    def scrape_job():
+        global is_scraping
+        is_scraping = True
+        try:
+            # Where I call my module2 scraper
+            print("running scraper...")
+        finally:
+            is_scraping = False
+
+    threading.Thread(target=scrape_job).start()
+    flash("Pull Data started. Refresh later to see updates.")
+    return redirect(url_for("index"))
+
+@app.route("/update-analysis")
+def update_analysis():
+    global is_scraping
+    if is_scraping:
+        flash("Cannot update analysis while Pull Data is running.")
+        return redirect(url_for("index"))
+    return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run(debug=True)
