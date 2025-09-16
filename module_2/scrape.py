@@ -1,7 +1,3 @@
-# - exposes BASE / SURVEY_BASE / RESULT_BASE as class constants
-# - on instantiation runs the survey collector (limit passed into constructor),
-#   then fetches details for each found result and merges them
-# - stores results on the instance as .links, .data (detail records), and .combined
 
 import re
 import time
@@ -11,31 +7,26 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
 class scrape_data:
-    # ---- class-level constants ----
+    # class-level constants
     BASE = "https://www.thegradcafe.com"
     SURVEY_BASE = f"{BASE}/survey/"
     RESULT_BASE = f"{BASE}/result/"
 
-    # ---- regexes as class attributes ----
+    # regexes as class attributes
     RESULT_RE = re.compile(r"/result/(\d+)\b")
     TERM_RE   = re.compile(r"\b(Spring|Summer|Fall|Winter)\s+\d{4}\b")
     DATE_RE   = re.compile(r"[A-Z][a-z]+ \d{1,2}, \d{4}")
 
-    # ---- http client shared by instances ----
+    # http client shared by instances
     _http = urllib3.PoolManager()
     _HEADERS = {"User-Agent": "Mozilla/5.0"}
 
     def __init__(self, limit: int | None = None):
         """
         Create a scraper instance which immediately:
-         1) collects up to `limit` survey entries (if limit is None it will run pages until exhaustion)
+         1) collects up to `limit` survey entries
          2) fetches detail pages for each collected result
-         3) merges survey + detail into self.combined
-
-        After init you can inspect:
-          - self.links     -> list[dict] survey rows (result_id, result_url, date_added, term)
-          - self.data      -> list[dict] detail rows (merged detail fields)
-          - self.combined  -> list[dict] merged per-result entries (survey + detail)
+         3) merges survey + detail
         """
         # run the two-stage workflow as part of initialization
         self.links = self.collect_survey_entries(self.SURVEY_BASE, limit=limit)
@@ -58,7 +49,7 @@ class scrape_data:
                 else:
                     self.data.append({"result_id": rid})
 
-        # merge into combined list keyed by result_id (detail overwrites survey on conflicts)
+        # Merge into combined list using result_id as key
         survey_map = {r["result_id"]: r for r in self.links}
         detail_map = {d.get("result_id"): d for d in self.data if d.get("result_id") is not None}
 
@@ -79,7 +70,7 @@ class scrape_data:
         end_page: int | None = None,
         limit: int | None = None,
         page_param: str = "page",
-        delay: tuple[float, float] = (0.8, 1.6),
+        delay: tuple[float, float] = (0.01, 0.05),
     ) -> list[dict]:
         """Return list of dicts with result_id, result_url, added_on, term from survey list pages."""
         seen: set[str] = set()
@@ -91,23 +82,20 @@ class scrape_data:
                 break
 
             page_url = f"{survey_base.rstrip('/')}/?{page_param}={page}"
-            r = self._http.request("GET", page_url, headers=self._HEADERS, timeout=30.0)
+            r = self._http.request("GET", page_url, headers=self._HEADERS, timeout=20.0)
             if r.status != 200:
-                # skip page and continue scanning (keeps crawling behavior similar to original)
                 page += 1
                 continue
 
             soup = BeautifulSoup(r.data, "html.parser")
 
-            # iterate rows in the table body; this captures both main rows and the detail rows
+            # Iterate rows in the table body; this captures both main rows and the detail rows
             rows = soup.select("tbody tr")
 
             new_found = 0
             for tr in rows:
-                # the *main* row has >= 3 <td>
                 tds = tr.find_all("td", recursive=False)
                 if len(tds) < 3:
-                    # skip (these do not contain information we want)
                     continue
 
                 a = tr.select_one('a[href*="/result/"]')
@@ -124,13 +112,13 @@ class scrape_data:
                 seen.add(rid)
                 abs_url = urljoin(survey_base, href)
 
-                # Added On date (3rd td)
+                # Added On date 3rd column
                 added_on = None
                 added_text = tds[2].get_text(" ", strip=True)
                 mdate = self.DATE_RE.search(added_text)
                 added_on = mdate.group(0) if mdate else (added_text or None)
 
-                # Look for the following sibling detail row that contains chips/tags (term)
+                # Look for the detail row that contains tag term
                 term = None
                 detail_row = tr.find_next_sibling("tr", class_="tw-border-none")
                 if detail_row:
@@ -146,11 +134,11 @@ class scrape_data:
                 })
                 new_found += 1
 
-                # stop early when we've collected the requested limit
+                # Stop at limit
                 if limit is not None and len(rows_out) >= limit:
                     return rows_out
 
-            # if no new rows found and no end_page specified, assume we've reached the end
+            # Stop when a page yields nothing (useful if pages are finite)
             if new_found == 0 and end_page is None:
                 break
 
@@ -176,10 +164,10 @@ class scrape_data:
 
         result = {"result_id": rid}
 
-        # Prefer the structured <dl> blocks first (dt->dd)
+        # <dl> blocks first (dt->dd)
         dls = soup.select("dl")
         for dl in dls:
-            # case A: each pair wrapped in a div
+            # Each pair wrapped in a div
             for row in dl.find_all("div", recursive=False):
                 dt = row.find("dt")
                 dd = row.find("dd")
@@ -189,7 +177,7 @@ class scrape_data:
                     if key and val:
                         result[key] = val
 
-        # Also capture GRE/score block under ul.tw-list-none (label span + value span)
+        # Also capture GRE/score block under ul.tw-list-none
         for li in soup.select("ul.tw-list-none > li"):
             spans = li.find_all("span")
             key = spans[0].get_text(strip=True).rstrip(":")
@@ -212,6 +200,3 @@ if __name__ == "__main__":
     for record in scraper.combined:
         for k, v in record.items():
             print(f"{k}: {v}")
-
-    # sample output
-#print(scraper.combined)  # print first two combined records

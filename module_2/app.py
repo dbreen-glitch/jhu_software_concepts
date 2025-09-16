@@ -9,4 +9,4 @@ def save_data(records, path: str = "applicant_data.json") -> None:
 if __name__ == "__main__":
     data = scrape_data(limit=30000)
     cleaned = clean_data(data)
-    save_data(cleaned.data, "applicant_data_2.json")
+    save_data(cleaned.data, "applicant_data.json")
