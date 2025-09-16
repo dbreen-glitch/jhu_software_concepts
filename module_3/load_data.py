@@ -28,6 +28,20 @@ else:
     with open(json_path, "r", encoding="utf-8") as f:
         records = json.load(f)
 
+# helper: convert empty-like strings to None; convert numeric fields to float or None
+def to_null(v, numeric=False):
+    if v is None:
+        return None
+    s = str(v).strip()
+    if s == "" or s.lower() in {"null", "none", "n/a", "na"}:
+        return None
+    if numeric:
+        try:
+            return float(s)
+        except Exception:
+            return None
+    return s
+
 # --- DB connect ---
 conn = psycopg2.connect(host=host, port=port, dbname=dbname, user=user, password=password)
 cur = conn.cursor()
@@ -43,11 +57,11 @@ cur.execute("""
         status TEXT,
         term TEXT,
         us_or_international TEXT,
-        gpa REAL,
-        gre REAL,
-        gre_v REAL,
-        gre_aw REAL,
-        degree REAL,
+        gpa FLOAT,
+        gre FLOAT,
+        gre_v FLOAT,
+        gre_aw FLOAT,
+        degree TEXT,
         llm_generated_program TEXT,
         llm_generated_university TEXT
     );
@@ -68,7 +82,13 @@ placeholders = ",".join(["%s"]*len(columns))
 sql = f"INSERT INTO applicants ({','.join(columns)}) VALUES ({placeholders});"
 
 for rec in records:
-    cur.execute(sql, [rec.get(c) for c in columns])
+    vals = []
+    for c in columns:
+        if c in ("gpa","gre","gre_v","gre_aw"):
+            vals.append(to_null(rec.get(c), numeric=True))
+        else:
+            vals.append(to_null(rec.get(c), numeric=False))
+    cur.execute(sql, vals)
 
 conn.commit()
 cur.close()
