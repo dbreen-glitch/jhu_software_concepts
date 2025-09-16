@@ -1,2 +1,5 @@
 llm_hosting/models/
 *.gguf
+
+venv/
+__pycache__/
