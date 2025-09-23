@@ -1,0 +1,89 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Grad School Cafe Data Analysis</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  
+</head>
+<body>
+  <header>
+    <div class="brand">Grad School Cafe Data Analysis</div>
+    <div class="controls">
+      <form action="{{ url_for('pull_data') }}" method="get">
+        <button type="submit">Pull Data</button>
+      </form>
+      <form action="{{ url_for('update_analysis') }}" method="get">
+        <button type="submit">Update Analysis</button>
+      </form>
+    </div>
+  </header>
+
+  <!-- Messages go here -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>
+    <h1>Analysis</h1>
+
+    <section class="card">
+      <h2>How many entries do you have in your database who have applied for Fall 2025?</h2>
+      <p><em>Answer: Applicant count: {{ q1 }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>What percentage of entries are from International students (not American or Other) (to two decimal places)?</h2>
+      <p><em>Answer: Percent International: {{ "%.2f"|format(pct_intl) }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>What is the average GPA, GRE, GRE V, GRE AW of applicants who provided these metrics?</h2>
+      <p><em>Answer: Average GPA: {{ avg_gpa }}, Average GRE: {{ avg_gre }}, Average GRE V: {{ avg_gre_v }}, Average GRE AW: {{ avg_gre_aw }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>What is the average GPA of American students in Fall 2025?</h2>
+      <p><em>Answer: Average GPA American: {{ avg_gpa_us_fall2025 }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>What percent of entries for Fall 2025 are Acceptances (to two decimal places)?</h2>
+      <p><em>Answer: Acceptance percent: {{ "%.2f"|format(pct_fall_accept) }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>What is the average GPA of applicants who applied for Fall 2025 who are Acceptances?</h2>
+      <p><em>Answer: Average GPA Acceptance: {{ avg_gpa_fall_accepted }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>How many entries are from applicants who applied to JHU for a masters degrees in Computer Science?</h2>
+      <p><em>Answer: {{ jhu_ms_cs }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>How many entries from Fall 2025 are acceptances from applicants who applied to Georgetown University for a PhD in Computer Science?</h2>
+      <p><em>Answer: {{ gtown_phd_cs_2025_accept }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>How many entries from Fall 2025 are acceptances from applicants who applied to UC Berkeley?</h2>
+      <p><em>Answer: {{ berkeley }}</em></p>
+    </section>
+
+    <section class="card">
+      <h2>How many entries from Fall 2025 were Rejected?</h2>
+      <p><em>Answer: {{ rejected }}</em></p>
+    </section>
+
+  </main>
+</body>
+</html>
